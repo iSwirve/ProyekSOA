@@ -7,8 +7,8 @@ const joi = require("joi");
 const User = require("../models/User");
 const keyJWT = "tugasSOA6_E401";
 
-router.post("", async (req, res) => {
-
+router.post("/register", async (req, res) => {
+    
 })
 
 
