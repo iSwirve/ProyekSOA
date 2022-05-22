@@ -9,42 +9,10 @@ const { boolean } = require("joi");
 const keysteam = "8455AC3CD36E18453E97ADCCC24F8A4F";
 
 router.get("/search", async (req, res) => {
-    let {name} = req.query
-    let querySearch = `http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json`;
-    let resultGet = await axios.get(querySearch);
-    let data = resultGet.data.applist;
-    let arrdata=[];
+    let {name} = req.query;
+    let result = await Game.get(name);
 
-    if(name=="")
-    {
-        for(let i=0; i<data.apps.length; i++)
-        {
-            let result = String(data.apps[i].name).toLowerCase().includes("test");
-            if(data.apps[i].name != "" && !result)
-            {
-                arrdata.push({
-                    id:data.apps[i].appid,
-                    name:data.apps[i].name
-                });
-            }
-        }
-    }
-    else if(name!="")
-    {
-        for(let i=0; i<data.apps.length; i++)
-        {
-            let result = String(data.apps[i].name).toLowerCase().includes(name.toLowerCase());
-            if(result)
-            {
-                arrdata.push({
-                    id:data.apps[i].appid,
-                    name:data.apps[i].name
-                });
-            }
-        }
-    }
-
-    return res.status(200).send(arrdata);
+    return res.status(200).send(result);
 })
 
 
