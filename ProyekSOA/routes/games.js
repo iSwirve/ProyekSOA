@@ -15,5 +15,12 @@ router.get("/search", async (req, res) => {
     return res.status(200).send(result);
 })
 
+router.get("/detail", async (req, res) => {
+    let {id} = req.query;
+    let result = await Game.detail(id);
+
+    return res.status(200).send(result);
+})
+
 
 module.exports = router;
