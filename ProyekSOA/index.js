@@ -5,9 +5,13 @@ app.use(express.urlencoded({ extended: true }));
 
 const users = require("./routes/users");
 const games = require("./routes/games");
+const transaction = require("./routes/transaction");
+
 
 app.use("/api/users/", users);
 app.use("/api/games/", games);
+app.use("/api/transaction/", transaction);
+
 
 app.listen(3000, () => {
     console.log("Listening to http://localhost:3000");
