@@ -18,7 +18,12 @@ router.get("/search", async (req, res) => {
 router.get("/detail", async (req, res) => {
     let {id} = req.query;
     let result = await Game.detail(id);
-
+    if(!result)
+    {
+        return res.status(404).send({
+            message : "Game tidak ditemukan"
+        })
+    }
     return res.status(200).send(result);
 })
 

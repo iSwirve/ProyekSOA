@@ -6,11 +6,15 @@ app.use(express.urlencoded({ extended: true }));
 const users = require("./routes/users");
 const games = require("./routes/games");
 const transaction = require("./routes/transaction");
+const wishlist = require("./routes/wishlist");
+
 
 
 app.use("/api/users/", users);
 app.use("/api/games/", games);
 app.use("/api/transaction/", transaction);
+app.use("/api/wishlist/", wishlist);
+
 
 
 app.listen(3000, () => {
