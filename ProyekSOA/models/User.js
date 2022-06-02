@@ -25,4 +25,5 @@ module.exports = {
         let result = await db.query("UPDATE users SET ? WHERE username = ?", [change, username]);
         return result;
     },
+
 }
