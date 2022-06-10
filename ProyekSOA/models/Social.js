@@ -27,6 +27,8 @@ module.exports = {
                 return result
             }
 
+        }else{
+            result = {"Message" : "User Not Found"}
         }
         return result
 

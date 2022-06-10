@@ -42,12 +42,7 @@ router.post(`/addFriendlist`,async(req,res)=>{
         });
     }
     let result = await Social.addFriendlist(userObj.email,email_friend);
-    if(result != ""){
-        return res.status(200).send(result);
-    }else{
-        return res.status(404).send({"Message" : "User not Found"})
-    }
-
+    return res.status(200).send(result);
 })
 
 router.post('/giftgame',async(req,res)=>{
