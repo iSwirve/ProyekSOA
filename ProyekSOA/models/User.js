@@ -21,8 +21,8 @@ module.exports = {
         let result = await db.query("INSERT INTO users SET ?", users);
         return result;
     },
-    update: async (username, change) => {
-        let result = await db.query("UPDATE users SET ? WHERE username = ?", [change, username]);
+    update: async (email, nama_user,no_telp,foto_profile) => {
+        let result = await db.query("UPDATE users SET nama_user = ?,no_telp = ?,foto_profile = ? WHERE email = ?", [nama_user,no_telp,foto_profile, email]);
         return result;
     },
 

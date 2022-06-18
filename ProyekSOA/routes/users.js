@@ -2,12 +2,42 @@ const { response } = require("express");
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const multer = require("multer");
 const jwt = require('jsonwebtoken');
 const joi = require('joi').extend(require('@joi/date'));
 const keyJWT = "Proyek_SOA";
 
-router.post("/register", async (req, res) => {
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./uploads/users");
+    },
+    
+    filename: (req, file, cb) => {
+        console.log(file);
+        let username = "";
+        if (req.body.username) {
+            username = req.body.username;
+        }
+        const extension = file.originalname.split('.')[file.originalname.split('.').length-1];
+        cb(null, username +"."+ extension);
+    },
+});
+
+
+
+const upload = multer({
+    
+    storage: storage,
+        fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            cb(new Error("Please upload an image"));
+        }
+        cb(null, true);
+    },
+});
+router.post("/register",upload.single("foto_profile"), async (req, res) => {
     let {email,username,nama_user,password,password_confirmation,no_telp} = req.body;
+    let foto_profile = "/uploads/users/" + req.file.filename;
     let validuser = joi.object({
         email:joi.string().email().required(),
         username: joi.string().required(),
@@ -42,6 +72,7 @@ router.post("/register", async (req, res) => {
             email: email,
             username:username,
             nama_user:nama_user,
+            foto_profile: foto_profile,
             password:password,
             no_telp: no_telp,
             tanggal_daftar:today
@@ -88,7 +119,31 @@ router.post("/login",async (req,res)=>{
     return res.status(200).send({body});
 
 })
-
+// router.put("/update", upload.single("foto_profile"),async (req,res)=>{
+//     //email dan username unique gk boleh diganti
+//     let {email,nama_user,no_telp} = req.body;
+//     let validuser = joi.object({
+//         email:joi.string().email().required(),
+//         nama_user: joi.string().required(),
+//         no_telp:joi.string().max(12).min(10).regex(/[0-9]/).required()
+//     });
+//     let hasil = validuser.validate(req.body); 
+//     if(hasil.error) return res.status(400).json(hasil.error); 
+//     let temp = await User.get(email);
+//     let foto_profile = temp.foto_profile;  
+//     if (!req.file) {         
+//         return res.status(400).send({
+//             message: "field tidak sesuai ketentuan!",
+//         });
+//     }
+//     await User.update(email, nama_user,no_telp,foto_profile);
+//     let isi = await User.get(email);
+//     const{tanggal_daftar,...data} = isi;
+    
+//     return res.status(201).send({
+//         data
+//     });
+// })
 
 
 module.exports = router;

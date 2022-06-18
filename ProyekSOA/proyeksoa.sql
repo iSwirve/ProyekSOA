@@ -1,5 +1,5 @@
 /*
-SQLyog Ultimate v13.1.1 (64 bit)
+SQLyog Community v13.1.7 (64 bit)
 MySQL - 10.4.14-MariaDB : Database - proyeksoa
 *********************************************************************
 */
@@ -39,6 +39,7 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `nama_user` varchar(255) NOT NULL,
+  `foto_profile` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `no_telp` varchar(255) NOT NULL,
   `tanggal_daftar` varchar(255) NOT NULL,
@@ -47,9 +48,9 @@ CREATE TABLE `users` (
 
 /*Data for the table `users` */
 
-insert  into `users`(`email`,`username`,`nama_user`,`password`,`no_telp`,`tanggal_daftar`) values 
-('john@gmail.com','john','john','1001','0999999912','05/31/2022'),
-('kevin@gmail.com','kevin','kevin','123','08999953232','06/10/2022');
+insert  into `users`(`email`,`username`,`nama_user`,`foto_profile`,`password`,`no_telp`,`tanggal_daftar`) values 
+('john@gmail.com','john','john','','1001','0999999912','05/31/2022'),
+('kevin@gmail.com','kevin','kevin','','123','08999953232','06/10/2022');
 
 /*Table structure for table `wishlist` */
 
