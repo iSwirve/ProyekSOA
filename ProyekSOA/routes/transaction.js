@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Game = require("../models/Game");
+const Transaction = require("../models/Transaction");
+
 const axios = require('axios');
 
 
@@ -12,7 +14,39 @@ const keyJWT = "Proyek_SOA";
 const dokuLib = require('jokul-nodejs-library');
 
 router.post("/buy", async (req, res) => {
-    let channel = req.body.channel;
+
+    let token = req.header("x-auth-token");
+    let game_id = req.body.game_id;
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
+    let game = await Game.detail(game_id);
+    console.log(game);
+    if (!game) {
+        return res.status(404).send({
+            message: "Game tidak ditemukan"
+        })
+    }
+
+    let transactionCheck = await Transaction.checkTransaction(userObj.email, game_id);
+    if(transactionCheck.length)
+    {
+        return res.status(400).send({
+            message : "Transaksi sedang berlangsung / sudah pernah beli"
+        })
+    }
+
+    let invoice = await Transaction.getInvoice();
+    console.log(invoice);
+    let user = await User.get(userObj.email);
+
+    let channel = "doku";
     let setupConfiguration = dokuLib.SetupConfiguration;
     setupConfiguration.environment = 'sandbox';
     setupConfiguration.client_id = "BRN-0230-1653882825953";
@@ -22,10 +56,10 @@ router.post("/buy", async (req, res) => {
     setupConfiguration.channel = channel;
 
     let paymentCodeRequest = dokuLib.PaymentCodeRequestDto;
-    paymentCodeRequest.customer.name = req.body.customerName;
-    paymentCodeRequest.customer.email = req.body.email;
-    paymentCodeRequest.order.invoice_number = randomInvoice(30);
-    paymentCodeRequest.order.amount = req.body.amount;
+    paymentCodeRequest.customer.name = user[0].nama_user;
+    paymentCodeRequest.customer.email = userObj.email;
+    paymentCodeRequest.order.invoice_number = invoice;
+    paymentCodeRequest.order.amount = 20000;
 
     paymentCodeRequest.virtual_account_info.reusable_status = false;
     paymentCodeRequest.virtual_account_info.expired_time = 60;
@@ -37,8 +71,16 @@ router.post("/buy", async (req, res) => {
             dat = await dokuLib.generateDOKUVa(setupConfiguration, paymentCodeRequest);
             // dat = await axios.post("https://api-sandbox.doku.com/doku-virtual-account/v2/payment-code");
         }
-        return res.status(200).send(dat);
 
+        let data = {
+            invoice : invoice,
+            email_user : userObj.email,
+            id_game : game_id,
+            status : 0
+        }
+
+        await Transaction.add(data);
+        return res.status(200).send(dat);
 
 
     }
@@ -49,6 +91,13 @@ router.post("/buy", async (req, res) => {
 
 
 
+})
+
+router.put("/verify/:invoice", async (req, res) =>{
+    let invoice = req.params.invoice;
+    let link = "https://api-sandbox.doku.com/orders/v1/status/" + invoice;
+    let status = await axios.get(link);
+    return status.data;
 })
 
 
