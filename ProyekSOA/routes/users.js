@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require("../models/User");
 const multer = require("multer");
 const jwt = require('jsonwebtoken');
+const fs = require("fs");
 const joi = require('joi').extend(require('@joi/date'));
 const keyJWT = "Proyek_SOA";
 
@@ -119,31 +120,62 @@ router.post("/login",async (req,res)=>{
     return res.status(200).send({body});
 
 })
-// router.put("/update", upload.single("foto_profile"),async (req,res)=>{
-//     //email dan username unique gk boleh diganti
-//     let {email,nama_user,no_telp} = req.body;
-//     let validuser = joi.object({
-//         email:joi.string().email().required(),
-//         nama_user: joi.string().required(),
-//         no_telp:joi.string().max(12).min(10).regex(/[0-9]/).required()
-//     });
-//     let hasil = validuser.validate(req.body); 
-//     if(hasil.error) return res.status(400).json(hasil.error); 
-//     let temp = await User.get(email);
-//     let foto_profile = temp.foto_profile;  
-//     if (!req.file) {         
-//         return res.status(400).send({
-//             message: "field tidak sesuai ketentuan!",
-//         });
-//     }
-//     await User.update(email, nama_user,no_telp,foto_profile);
-//     let isi = await User.get(email);
-//     const{tanggal_daftar,...data} = isi;
+router.put("/update", upload.single("foto_profile"),async (req,res)=>{
+    //email dan username unique gk boleh diganti
+    let {email,nama_user,no_telp} = req.body;
+    let validuser = joi.object({
+        email:joi.string().email().required(),
+        username: joi.string().required(),
+        nama_user: joi.string().required(),
+        no_telp:joi.string().max(12).min(10).regex(/[0-9]/).required()
+    });
+    let hasil = validuser.validate(req.body); 
+    if(hasil.error) return res.status(400).json(hasil.error); 
+    let temp = await User.get(email);
+    if (!temp.length) {
+        return res.status(404).send({
+            message: "data tidak ditemukan!",
+        });
+    }
+    if (!req.file) {         
+        return res.status(400).send({
+            message: "field tidak sesuai ketentuan!",
+        });
+    }
+    nama_foto = "./uploads/posts/" + req.file.filename;
+    await User.update(email, nama_user,no_telp);
+    let isi = await User.get(email);
+    const{tanggal_daftar,...data} = isi;
     
-//     return res.status(201).send({
-//         data
-//     });
-// })
+    return res.status(201).send({
+        data
+    });
+})
+router.delete("/delete",async (req,res)=>{
+    let {email,username} = req.body;
+    let validuser = joi.object({
+        email:joi.string().email().required(),
+        username: joi.string().required()
+    });
+    let hasil = validuser.validate(req.body); 
+    if(hasil.error) return res.status(400).json(hasil.error); 
+    let data = await User.get(email);
+    let data2 = await User.cek_username(username);
+    if (!data.length) {
+        return res.status(404).send({
+            message: "data tidak ditemukan!",
+        });
+    }
+    if (!data2.length) {
+        return res.status(404).send({
+            message: "data tidak ditemukan!",
+        });
+    }
+    await User.delete(email,username);
+    return res.status(201).send({
+        message: "delete berhasil!",
+    });
+})
 
 
 module.exports = router;

@@ -21,8 +21,12 @@ module.exports = {
         let result = await db.query("INSERT INTO users SET ?", users);
         return result;
     },
-    update: async (email, nama_user,no_telp,foto_profile) => {
-        let result = await db.query("UPDATE users SET nama_user = ?,no_telp = ?,foto_profile = ? WHERE email = ?", [nama_user,no_telp,foto_profile, email]);
+    update: async (email, nama_user,no_telp) => {
+        let result = await db.query("UPDATE users SET nama_user = ?,no_telp = ? WHERE email = ?", [nama_user,no_telp, email]);
+        return result;
+    },
+    delete: async (email, username) => {
+        let result = await db.query("DELETE FROM users WHERE email = ? and username = ?", [email,username]);
         return result;
     },
 
