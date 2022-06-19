@@ -21,7 +21,7 @@ module.exports = {
                 status : 2
             }
 
-            let temp_main = await db.query(`SELECT * FROM social_friend WHERE email_first = '${email_friend}' and email_second = '${email}' and status = 2`)
+            let temp_main = await db.query(`SELECT * FROM social_friend WHERE email_first = '${email_friend}' and email_second = '${email}' and status = 2 or status = 1`)
             if(temp_main.length > 0){
                 result = {"Meesage" : "User ini sudah ditambahkan oleh " + email_friend + " ,Mohon untuk melihat Request Friend"}
                 return result
