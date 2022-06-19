@@ -27,5 +27,24 @@ router.get("/detail", async (req, res) => {
     return res.status(200).send(result);
 })
 
+router.get("/category", async (req, res) => {
+    let {category_name} = req.query;
+    try{
+        let result = await Game.category(category_name);
+        return res.status(200).send(result);
+    }
+    catch(Err)
+    {
+        return res.status(400).send("game tidak ditemukan");
+    }
+})
+
+
+router.get("/sort", async (req, res) => {
+    let {alphabet} = req.query;
+    let result = await Game.sort(alphabet);
+    return res.status(200).send(result);
+})
+
 
 module.exports = router;

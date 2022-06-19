@@ -1,7 +1,6 @@
 
 const db = require("../database");
 
-
 module.exports = {
     getFriendlist: async(email = "") => {
         let result = null;
