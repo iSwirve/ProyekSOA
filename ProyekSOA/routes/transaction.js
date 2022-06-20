@@ -93,12 +93,19 @@ router.post("/buy", async (req, res) => {
 
 })
 
-router.put("/verify/:invoice", async (req, res) =>{
-    let invoice = req.params.invoice;
-    let link = "https://api-sandbox.doku.com/orders/v1/status/" + invoice;
-    let status = await axios.get(link);
-    return status.data;
-})
+// router.put("/verify/:invoice", async (req, res) =>{
+//     let invoice = req.params.invoice;
+//     try{
+//         let link = "https://api-sandbox.doku.com/orders/v1/status/" + invoice;
+//         let status = await axios.get(link);
+//         return res.status(200).send(status.data);
+//     }
+//     catch(e)
+//     {
+//         return res.status(400).send(e);
+//     }
+    
+// })
 
 
 

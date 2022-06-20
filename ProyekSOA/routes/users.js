@@ -98,6 +98,7 @@ router.post("/login",async (req,res)=>{
         email:joi.string().email().required(),
         password:joi.string().required()
     });
+
     let hasil = validuser.validate(req.body); 
     if(hasil.error) return res.status(400).json(hasil.error);
     let user = (await User.login(email,password))[0];
@@ -110,7 +111,7 @@ router.post("/login",async (req,res)=>{
         email : email,
         password : password,
     }
-    let token = jwt.sign(pengguna, keyJWT, {expiresIn: '5m'});
+    let token = jwt.sign(pengguna, keyJWT, {expiresIn: '24h'});
 
     let body = {
         email:email,
