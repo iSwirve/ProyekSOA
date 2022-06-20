@@ -106,7 +106,7 @@ module.exports = {
         }
         return result
     },
-    giftGame : async (username_friend,name_game)=>{
+    giftGame : async (email,email_request,name_game)=>{
 
     }
 }
