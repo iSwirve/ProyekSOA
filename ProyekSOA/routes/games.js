@@ -2,11 +2,10 @@ const { response } = require("express");
 const express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const joi = require("joi");
 const Game = require("../models/Game");
 const axios =require('axios');
-const { boolean } = require("joi");
-const keysteam = "8455AC3CD36E18453E97ADCCC24F8A4F";
+
+const keyJWT = "Proyek_SOA";
 
 router.get("/search", async (req, res) => {
     let {name} = req.query;
@@ -43,6 +42,21 @@ router.get("/category", async (req, res) => {
 router.get("/sort", async (req, res) => {
     let {alphabet} = req.query;
     let result = await Game.sort(alphabet);
+    return res.status(200).send(result);
+})
+
+router.get("/library", async (req, res) => {
+    let token = req.header("x-auth-token");
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
+    let result = await Game.library(userObj.email);
     return res.status(200).send(result);
 })
 

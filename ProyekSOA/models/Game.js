@@ -116,10 +116,44 @@ module.exports = {
 
         if (id != "") {
             for (let i = 0; i < arrdata.length; i++) {
-                if(String(arrdata[i].id).toLowerCase().includes(String(id).toLowerCase()))
+                if(String(arrdata[i].id).toLowerCase() == (String(id).toLowerCase()))
                     return arrdata[i];
             }
         }
+    },
+    library: async (email) => {
+        let query = await db.query(`select * from library where email_user = '${email}'`);
+        let user = await db.query(`select * from users where email = '${email}'`);
+        
+        let querySearch = `https://www.freetogame.com/api/games`;
+        let resultGet = await axios.get(querySearch);
+        let data = resultGet.data;
+        let arrdata = [];
+        let library_data = [];
+        let tampilan = [];
+
+        for (let i = 0; i < data.length; i++) {
+            arrdata.push({
+                id: data[i].id,
+                title: data[i].title,
+                genre: data[i].genre,
+            });
+        }
+
+        for (let i = 0; i < arrdata.length; i++) {
+            for(let j=0; j<query.length; j++)
+            {
+                if(String(arrdata[i].id) == query[j].id_game)
+                    library_data.push(arrdata[i])
+            }
+        }
+
+        tampilan.push({
+            nama_user:user[0].nama_user,
+            library:library_data
+        })
+
+        return tampilan;
     }
 
     

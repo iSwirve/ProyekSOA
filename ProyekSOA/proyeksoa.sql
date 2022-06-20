@@ -1,6 +1,6 @@
 /*
-SQLyog Community v13.1.7 (64 bit)
-MySQL - 10.4.14-MariaDB : Database - proyeksoa
+SQLyog Professional v13.1.1 (64 bit)
+MySQL - 10.4.22-MariaDB : Database - proyeksoa
 *********************************************************************
 */
 
@@ -16,6 +16,19 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`proyeksoa` /*!40100 DEFAULT CHARACTER S
 
 USE `proyeksoa`;
 
+/*Table structure for table `library` */
+
+DROP TABLE IF EXISTS `library`;
+
+CREATE TABLE `library` (
+  `email_user` varchar(255) DEFAULT NULL,
+  `id_game` varchar(255) DEFAULT NULL,
+  KEY `email_user` (`email_user`),
+  CONSTRAINT `library_ibfk_1` FOREIGN KEY (`email_user`) REFERENCES `users` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `library` */
+
 /*Table structure for table `social_friend` */
 
 DROP TABLE IF EXISTS `social_friend`;
@@ -30,6 +43,31 @@ CREATE TABLE `social_friend` (
 
 insert  into `social_friend`(`email_first`,`email_second`,`status`) values 
 ('kevin@gmail.com','john@gmail.com',4);
+
+/*Table structure for table `transaction` */
+
+DROP TABLE IF EXISTS `transaction`;
+
+CREATE TABLE `transaction` (
+  `invoice` varchar(255) NOT NULL,
+  `email_user` varchar(255) DEFAULT NULL,
+  `id_game` varchar(255) DEFAULT NULL,
+  `status` decimal(1,0) DEFAULT NULL,
+  PRIMARY KEY (`invoice`),
+  KEY `email_user` (`email_user`),
+  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`email_user`) REFERENCES `users` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*Data for the table `transaction` */
+
+insert  into `transaction`(`invoice`,`email_user`,`id_game`,`status`) values 
+('INV_001','john@gmail.com','23',0),
+('INV_002','john@gmail.com','72',0),
+('INV_003','john@gmail.com','73',0),
+('INV_004','john@gmail.com','74',0),
+('INV_005','john@gmail.com','75',0),
+('INV_006','john@gmail.com','77',0),
+('INV_007','john@gmail.com','78',0);
 
 /*Table structure for table `users` */
 

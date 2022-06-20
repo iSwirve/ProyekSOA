@@ -78,7 +78,7 @@ router.post("/buy", async (req, res) => {
             id_game : game_id,
             status : 0
         }
-
+        
         await Transaction.add(data);
         return res.status(200).send(dat);
 
