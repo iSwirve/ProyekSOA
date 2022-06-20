@@ -12,76 +12,81 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "./uploads/users");
     },
-    
+
     filename: (req, file, cb) => {
         console.log(file);
         let username = "";
         if (req.body.username) {
             username = req.body.username;
         }
-        const extension = file.originalname.split('.')[file.originalname.split('.').length-1];
-        cb(null, username +"."+ extension);
+        const extension = file.originalname.split('.')[file.originalname.split('.').length - 1];
+        cb(null, username + "." + extension);
     },
 });
 
 
 
 const upload = multer({
-    
+
     storage: storage,
-        fileFilter: (req, file, cb) => {
+    fileFilter: (req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             cb(new Error("Please upload an image"));
         }
         cb(null, true);
     },
 });
-router.post("/register",upload.single("foto_profile"), async (req, res) => {
-    let {email,username,nama_user,password,password_confirmation,no_telp} = req.body;
+router.post("/register", upload.single("foto_profile"), async (req, res) => {
+    let { email, username, nama_user, password, password_confirmation, no_telp } = req.body;
     let foto_profile = "/uploads/users/" + req.file.filename;
+
     let validuser = joi.object({
-        email:joi.string().email().required(),
+        email: joi.string().email().required(),
         username: joi.string().required(),
         nama_user: joi.string().required(),
-        password:joi.string().required(),
+        password: joi.string().required(),
         password_confirmation: joi.any().valid(joi.ref('password')).required(),
-        no_telp:joi.string().max(12).min(10).regex(/[0-9]/).required()
+        no_telp: joi.string().max(12).min(10).regex(/[0-9]/).required()
     });
-    let hasil = validuser.validate(req.body); 
-    if(hasil.error) return res.status(400).json(hasil.error); 
+    if (email == "admin") {
+        return res.status(400).send("admin sudah pernah dipakai");
+    }
+
+    let hasil = validuser.validate(req.body);
+    if (hasil.error) return res.status(400).json(hasil.error);
     let user = (await User.cek_username(username))[0];
-        if (user) {
-            return res.status(404).send({
-                message: "username sudah ada!",
-            });
-        }
-        let cek_email = (await User.get(email))[0];
-        if (cek_email) {
-            return res.status(404).send({
-                message: "email sudah ada!",
-            });
-        }
+    if (user) {
+        return res.status(404).send({
+            message: "username sudah ada!",
+        });
+    }
+    let cek_email = (await User.get(email))[0];
+    if (cek_email) {
+        return res.status(404).send({
+            message: "email sudah ada!",
+        });
+    }
 
     var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); 
-        var yyyy = today.getFullYear();
-    
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+
     today = mm + '/' + dd + '/' + yyyy;
     try {
         let user = {
             email: email,
-            username:username,
-            nama_user:nama_user,
+            username: username,
+            nama_user: nama_user,
             foto_profile: foto_profile,
-            password:password,
+            password: password,
             no_telp: no_telp,
-            tanggal_daftar:today
+            tanggal_daftar: today
         };
         await User.add(user);
-        
-        const{tanggal_daftar,...data} = user;
-    
+
+        const { tanggal_daftar, ...data } = user;
+
         return res.status(201).send({
             data
         });
@@ -92,91 +97,91 @@ router.post("/register",upload.single("foto_profile"), async (req, res) => {
     }
 })
 
-router.post("/login",async (req,res)=>{
-    let {email,password} = req.body;
+router.post("/login", async (req, res) => {
+    let { email, password } = req.body;
+
+    if (email == "admin") {
+        if (password == "admin") {
+            let objAdmin = {
+                email : email,
+                password : password
+            }
+            let token = jwt.sign(objAdmin, keyJWT, { expiresIn: '24h' });
+            return res.status(200).send({
+                email: email,
+                waktu_login: new Date().toLocaleString('en-GB', { hour12: true }),
+                token: token
+            })
+        }
+    }
+
     let validuser = joi.object({
-        email:joi.string().email().required(),
-        password:joi.string().required()
+        email: joi.string().email().required(),
+        password: joi.string().required()
     });
 
-    let hasil = validuser.validate(req.body); 
-    if(hasil.error) return res.status(400).json(hasil.error);
-    let user = (await User.login(email,password))[0];
+    let hasil = validuser.validate(req.body);
+    if (hasil.error) return res.status(400).json(hasil.error);
+    let user = (await User.login(email, password))[0];
     if (!user) {
         return res.status(404).send({
             message: "Wrong email/password!",
         });
     }
     let pengguna = {
-        email : email,
-        password : password,
+        email: email,
+        password: password,
     }
-    let token = jwt.sign(pengguna, keyJWT, {expiresIn: '24h'});
+    let token = jwt.sign(pengguna, keyJWT, { expiresIn: '24h' });
 
     let body = {
-        email:email,
-        waktu_login:new Date().toLocaleString('en-GB', {hour12: true}),
-        token:token
+        email: email,
+        waktu_login: new Date().toLocaleString('en-GB', { hour12: true }),
+        token: token
     }
-    return res.status(200).send({body});
+    return res.status(200).send({ body });
 
 })
-router.put("/update", upload.single("foto_profile"),async (req,res)=>{
+router.put("/update", upload.single("foto_profile"), async (req, res) => {
     //email dan username unique gk boleh diganti
-    let {email,nama_user,no_telp} = req.body;
+    let { email, nama_user, no_telp } = req.body;
+    let token = req.header("x-auth-token");
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
     let validuser = joi.object({
-        email:joi.string().email().required(),
-        username: joi.string().required(),
         nama_user: joi.string().required(),
-        no_telp:joi.string().max(12).min(10).regex(/[0-9]/).required()
+        no_telp: joi.string().max(12).min(10).regex(/[0-9]/).required()
     });
-    let hasil = validuser.validate(req.body); 
-    if(hasil.error) return res.status(400).json(hasil.error); 
+    let hasil = validuser.validate(req.body);
+    if (hasil.error) return res.status(400).json(hasil.error);
     let temp = await User.get(email);
     if (!temp.length) {
         return res.status(404).send({
             message: "data tidak ditemukan!",
         });
     }
-    if (!req.file) {         
+    if (!req.file) {
         return res.status(400).send({
             message: "field tidak sesuai ketentuan!",
         });
     }
     nama_foto = "./uploads/posts/" + req.file.filename;
-    await User.update(email, nama_user,no_telp);
+    await User.update(userObj.email, nama_user, no_telp);
     let isi = await User.get(email);
-    const{tanggal_daftar,...data} = isi;
-    
+    const { tanggal_daftar, ...data } = isi;
+
     return res.status(201).send({
         data
     });
 })
-router.delete("/delete",async (req,res)=>{
-    let {email,username} = req.body;
-    let validuser = joi.object({
-        email:joi.string().email().required(),
-        username: joi.string().required()
-    });
-    let hasil = validuser.validate(req.body); 
-    if(hasil.error) return res.status(400).json(hasil.error); 
-    let data = await User.get(email);
-    let data2 = await User.cek_username(username);
-    if (!data.length) {
-        return res.status(404).send({
-            message: "data tidak ditemukan!",
-        });
-    }
-    if (!data2.length) {
-        return res.status(404).send({
-            message: "data tidak ditemukan!",
-        });
-    }
-    await User.delete(email,username);
-    return res.status(201).send({
-        message: "delete berhasil!",
-    });
-})
+
 
 
 module.exports = router;
