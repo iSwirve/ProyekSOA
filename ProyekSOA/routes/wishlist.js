@@ -34,9 +34,32 @@ router.post("/:game_id", async (req, res) => {
         message : "Berhasil menambahkan game " + game.title + " ke dalam wishlist"
     })
 
-
-    
 })
+
+router.get("/", async (req,res) =>{
+
+    let token = req.header("x-auth-token");
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
+    let wishArr = [];  
+    let wishes = await Wishlist.get(userObj.email);
+    for (let i = 0; i < wishes.length; i++) {
+        const wish = wishes[i];
+        let game = await Game.detail(wish.game_id);
+        wishArr.push(game.title);
+    }
+    return res.status(200).send({
+        wishlists : wishArr
+    })
+})
+
 
 
 module.exports = router;

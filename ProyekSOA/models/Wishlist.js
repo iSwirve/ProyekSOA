@@ -1,8 +1,9 @@
 const db = require("../database");
 
 module.exports = {
-    get: async () =>{
-        
+    get: async (email) =>{
+        let result = await db.query("SELECT * FROM wishlist WHERE email_user = ?", [email]);
+        return result;
     },
     add : async (email, game_id) =>{
         let obj = {
