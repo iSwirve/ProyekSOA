@@ -1,9 +1,20 @@
 const db = require("../database");
 
 module.exports = {
+    getall: async () => {
+        let result = null;
+        result = await db.query("SELECT * FROM users");
+        return result;
+    },
     get: async (email = "") => {
         let result = null;
         if (email !== "") result = await db.query("SELECT * FROM users WHERE email = ?", email);
+        else result = await db.query("SELECT * FROM users");
+        return result;
+    },
+    get2: async (email,username) => {
+        let result = null;
+        if (email !== "" && username !== "") result = await db.query("SELECT * FROM users WHERE email = ? and username = ?",  [email,username]);
         else result = await db.query("SELECT * FROM users");
         return result;
     },

@@ -30,16 +30,17 @@ const upload = multer({
 
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+        if (!file.originalname.match(/\.(jpg)$/)) {
             cb(new Error("Please upload an image"));
         }
         cb(null, true);
     },
 });
+//russel
 router.post("/register", upload.single("foto_profile"), async (req, res) => {
     let { email, username, nama_user, password, password_confirmation, no_telp } = req.body;
+    //cmn bisa .jpg
     let foto_profile = "/uploads/users/" + req.file.filename;
-
     let validuser = joi.object({
         email: joi.string().email().required(),
         username: joi.string().required(),
@@ -96,7 +97,7 @@ router.post("/register", upload.single("foto_profile"), async (req, res) => {
         });
     }
 })
-
+//russel
 router.post("/login", async (req, res) => {
     let { email, password } = req.body;
 
@@ -142,9 +143,11 @@ router.post("/login", async (req, res) => {
     return res.status(200).send({ body });
 
 })
+//russel
 router.put("/update", upload.single("foto_profile"), async (req, res) => {
     //email dan username unique gk boleh diganti
-    let { email, nama_user, no_telp } = req.body;
+    //cmn bisa .jpg
+    let { email,username, nama_user, no_telp } = req.body;
     let token = req.header("x-auth-token");
     let userObj;
     try {
@@ -156,12 +159,14 @@ router.put("/update", upload.single("foto_profile"), async (req, res) => {
         });
     }
     let validuser = joi.object({
+        email: joi.string().email().required(),
+        username: joi.string().required(),
         nama_user: joi.string().required(),
         no_telp: joi.string().max(12).min(10).regex(/[0-9]/).required()
     });
     let hasil = validuser.validate(req.body);
     if (hasil.error) return res.status(400).json(hasil.error);
-    let temp = await User.get(email);
+    let temp = await User.get2(email,username);
     if (!temp.length) {
         return res.status(404).send({
             message: "data tidak ditemukan!",
@@ -172,7 +177,7 @@ router.put("/update", upload.single("foto_profile"), async (req, res) => {
             message: "field tidak sesuai ketentuan!",
         });
     }
-    nama_foto = "./uploads/posts/" + req.file.filename;
+    foto_profile = "./uploads/posts/" + req.file.filename;
     await User.update(userObj.email, nama_user, no_telp);
     let isi = await User.get(email);
     const { tanggal_daftar, ...data } = isi;

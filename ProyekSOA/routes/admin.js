@@ -107,7 +107,7 @@ router.post("/verify/:invoice", async (req,res) =>{
 
 })
 
-
+//russel
 router.delete("/deleteuser", async (req, res) => {
     let { email, username } = req.body;
     let token = req.header("x-auth-token");
@@ -134,12 +134,12 @@ router.delete("/deleteuser", async (req, res) => {
     let data2 = await User.cek_username(username);
     if (!data.length) {
         return res.status(404).send({
-            message: "data tidak ditemukan!",
+            message: "email tidak ditemukan!",
         });
     }
     if (!data2.length) {
         return res.status(404).send({
-            message: "data tidak ditemukan!",
+            message: "username tidak ditemukan!",
         });
     }
     await User.delete(email, username);
@@ -147,6 +147,33 @@ router.delete("/deleteuser", async (req, res) => {
         message: "delete berhasil!",
     });
 })
-
+//russel 
+router.get("/search_user/:email/:username", async (req, res) =>{
+    let {email,username} = req.params;
+    let token = req.header("x-auth-token");
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
+    if(userObj.email != "admin")
+    {
+        return res.status(400).send("Antum bukan admin");
+    }
+    if (!email && !username) {
+        let data = await User.getall();
+        return res.status(200).send({ data });
+    }else{
+        let data = await User.get2(email,username);
+        if(!data.length){
+            return res.status(404).send("user tidak ditemukkan");
+        }
+        return res.status(200).send({ data });
+    }
+} )
 
 module.exports = router;
