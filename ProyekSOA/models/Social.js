@@ -98,6 +98,12 @@ module.exports = {
         if (email !== "" && email_request !== ""){
             result = await db.query(`Delete FROM social_friend WHERE (email_first = '${email}' and email_second = '${email_request}') or (email_first = '${email_request}' and email_second = '${email}')`);
         }
+        if(result.affectedRows != 0){
+            result = {"Message" : "User Deleted"}
+
+        }else{
+            result = {"Message" : "User Error!"}
+        }
         return result
     },
     giftGame : async (username_friend,name_game)=>{

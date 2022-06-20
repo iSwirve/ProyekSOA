@@ -112,13 +112,7 @@ router.delete(`/deleteFriend`,async(req,res)=>{
     }
     let result = await Social.deletedFriendlist(userObj.email,email_req)
     if(result !== ""){
-        return res.status(201).send({
-            Message: "User Deleted!"
-        });
-    }else{
-        return res.status(400).send({
-            Message: "Error!"
-        });
+        return res.status(201).send(result);
     }
     return res.status(201).send(result)
 })
