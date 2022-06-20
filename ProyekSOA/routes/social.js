@@ -22,7 +22,6 @@ router.get(`/getFriendlist`,async(req,res)=>{
     if(result != ""){
         return res.status(200).send(result);
     }
-    return res.status(200).send({"Message" : "Friendlist saat ini kosong"});
 
 })
 
@@ -56,6 +55,7 @@ router.get(`/getRequestFriend`,async(req,res)=>{
             Message: "unauthorized"
         });
     }
+
     let result = await Social.getRequestFriendlist(userObj.email);
     if(result != ""){
         return res.status(200).send(result);

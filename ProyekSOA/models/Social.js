@@ -31,7 +31,14 @@ module.exports = {
                 }
             }
         }
-        return result;
+        if(result == null){
+            result = {"Message" : "User saat ini tidak memiliki pertemanan!"}
+            console.log(result)
+            return result
+        }
+        console.log(result)
+        return result
+
     },
     addFriendlist: async (email,email_friend) =>{
         let result = null;
@@ -49,7 +56,7 @@ module.exports = {
 
             let temp_main = await db.query(`SELECT * FROM social_friend WHERE email_first = '${email_friend}' and email_second = '${email}' and status = 2 or status = 1`)
             if(temp_main.length > 0){
-                result = {"Meesage" : "User ini sudah ditambahkan oleh " + email_friend + " ,Mohon untuk melihat Request Friend"}
+                result = {"Meesage" : "User ini sudah ditambahkan oleh " + email_friend + " ,Mohon untuk melihat Request Friend atau Friendlist"}
                 return result
             }
             let temp_friend = await db.query(`SELECT * FROM social_friend WHERE email_first = '${email}' and email_second = '${email_friend}'`)
@@ -70,9 +77,20 @@ module.exports = {
     },
     getRequestFriendlist: async (email)=>{
         let result = null;
+        let getReq = []
+        console.log(email)
         if (email !== ""){
-            result = await db.query("SELECT * FROM social_friend WHERE email_second = ? = status = 2", email);
+            temp = await db.query("SELECT email_first FROM social_friend WHERE email_second = ? and status = 2", email);
+            if(temp.length >0){
+                temp.forEach((tempz)=>{
+                    getReq.push(tempz.email_first)
+                })
+                result = {
+                    "Request_Pertemanan" : getReq
+                }
+            }
         }
+
         return result;
     },
     requestFriendlist: async (email,email_friend,request) =>{
