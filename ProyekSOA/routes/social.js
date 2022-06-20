@@ -96,8 +96,30 @@ router.post('/giftgame',async(req,res)=>{
 })
 
 router.delete(`/deleteFriend`,async(req,res)=>{
-    let {username} = req.body
-    let result = await Social.deleteFriendlist(username)
+    let {email_req} = req.body
+    let token = req.header("x-auth-token");
+    if(email_req == ""){
+        return res.status(400).send({"Message" : "Field Tidak sesuai dengan ketentuan!"})
+    }
+    let userObj;
+    try {
+        userObj = jwt.verify(token, keyJWT);
+    } catch (error) {
+        console.log(error);
+        return res.status(401).send({
+            Message: "unauthorized"
+        });
+    }
+    let result = await Social.deletedFriendlist(userObj.email,email_req)
+    if(result !== ""){
+        return res.status(201).send({
+            Message: "User Deleted!"
+        });
+    }else{
+        return res.status(400).send({
+            Message: "Error!"
+        });
+    }
     return res.status(201).send(result)
 })
 

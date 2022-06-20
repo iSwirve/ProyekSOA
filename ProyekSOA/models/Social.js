@@ -4,7 +4,33 @@ const db = require("../database");
 module.exports = {
     getFriendlist: async(email = "") => {
         let result = null;
-        if (email !== "") result = await db.query("SELECT email_second,status FROM social_friend WHERE email_first = ? and status = 1", email);
+        let friendlist = []
+        if (email !== "") {
+            let temp = await db.query(`SELECT email_second FROM social_friend WHERE email_first = '${email}' and status = 1`)
+            if(temp.length > 0){
+                temp.forEach((tempz)=>{
+                    friendlist.push(tempz.email_second)
+                })
+                console.log(friendlist)
+                result = {
+                    "Friend" : temp.length,
+                    friendlist
+
+                }
+            }
+            let temp2 = await db.query(`SELECT email_first  FROM social_friend WHERE email_second = '${email}' and status = 1`);
+            if(temp2.length > 0){
+                temp2.forEach((temp)=>{
+                    friendlist.push(temp.email_first)
+                })
+                console.log(friendlist)
+                result = {
+                    "Friend" : temp2.length,
+                    friendlist
+
+                }
+            }
+        }
         return result;
     },
     addFriendlist: async (email,email_friend) =>{
@@ -44,7 +70,9 @@ module.exports = {
     },
     getRequestFriendlist: async (email)=>{
         let result = null;
-        if (email !== "") result = await db.query("SELECT * FROM social_friend WHERE email_second = ? and status = 2", email);
+        if (email !== ""){
+            result = await db.query("SELECT * FROM social_friend WHERE email_second = ? = status = 2", email);
+        }
         return result;
     },
     requestFriendlist: async (email,email_friend,request) =>{
@@ -65,8 +93,12 @@ module.exports = {
             return result
         }
     },
-    deletedFriendlist:async (username_friend) =>{
-
+    deletedFriendlist:async (email,email_request) =>{
+        let result = null
+        if (email !== "" && email_request !== ""){
+            result = await db.query(`Delete FROM social_friend WHERE (email_first = '${email}' and email_second = '${email_request}') or (email_first = '${email_request}' and email_second = '${email}')`);
+        }
+        return result
     },
     giftGame : async (username_friend,name_game)=>{
 
