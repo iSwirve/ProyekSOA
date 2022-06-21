@@ -5,8 +5,24 @@ const User = require("../models/User");
 const multer = require("multer");
 const jwt = require('jsonwebtoken');
 const fs = require("fs");
+var TeleSignSDK = require('telesignsdk');
 const joi = require('joi').extend(require('@joi/date'));
 const keyJWT = "Proyek_SOA";
+
+const customerId = "5BC0A67A-F6A4-42CA-B585-D0E2547200E3";
+  const apiKey = "nkdz5tMMyX58TJjBqZlQ8TCdYQyrObXX/CKa4P5B+lYgruBjfW0WyLGf41DnrZZkXv+O4LKI7flBwnf3DbYptQ==";
+  const rest_endpoint = "https://rest-api.telesign.com";
+  const timeout = 60*1000; // 60 secs
+
+  const client = new TeleSignSDK( customerId,
+      apiKey,
+      rest_endpoint,
+      timeout // optional
+      // userAgent
+  );
+
+  
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -47,7 +63,7 @@ router.post("/register", upload.single("foto_profile"), async (req, res) => {
         nama_user: joi.string().required(),
         password: joi.string().required(),
         password_confirmation: joi.any().valid(joi.ref('password')).required(),
-        no_telp: joi.string().max(12).min(10).regex(/[0-9]/).required()
+        no_telp: joi.string().max(13).min(10).regex(/[0-9]/).required()
     });
     if (email == "admin") {
         return res.status(400).send("admin sudah pernah dipakai");
@@ -67,6 +83,22 @@ router.post("/register", upload.single("foto_profile"), async (req, res) => {
             message: "email sudah ada!",
         });
     }
+    const phoneNumber = no_telp;
+    const message = `notifikasi berhasil mendaftar akun game store dengan username ${username}!`;
+    const messageType = "ARN";
+  console.log("## MessagingClient.message ##");
+
+  function messageCallback(error, responseBody) {
+      if (error === null) {
+          console.log(`Messaging response for messaging phone number: ${phoneNumber}` +
+              ` => code: ${responseBody['status']['code']}` +
+              `, description: ${responseBody['status']['description']}`);
+      } else {
+          console.error("Unable to send message. " + error);
+      }
+  }
+  client.sms.message(messageCallback, phoneNumber, message, messageType);
+
 
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
