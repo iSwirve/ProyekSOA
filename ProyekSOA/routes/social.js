@@ -57,7 +57,7 @@ router.get(`/getRequestFriend`,async(req,res)=>{
     }
 
     let result = await Social.getRequestFriendlist(userObj.email);
-    if(result != ""){
+    if(result != null){
         return res.status(200).send(result);
     }
     return res.status(200).send({"Message" : "Request Friendlist saat ini kosong"});
