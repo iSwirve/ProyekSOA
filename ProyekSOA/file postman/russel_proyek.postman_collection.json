@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "b54c694a-717f-4229-a5fb-0b384fb63794",
+		"name": "russel_proyek",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19494060"
+	},
+	"item": [
+		{
+			"name": "http://localhost:3000/api/users/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "iop@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "loopershamanoob",
+							"type": "text"
+						},
+						{
+							"key": "nama_user",
+							"value": "eriko",
+							"type": "text"
+						},
+						{
+							"key": "foto_profile",
+							"type": "file",
+							"src": "/C:/Users/Russel Joshua C/OneDrive/Pictures/maxresdefault.jpg"
+						},
+						{
+							"key": "password",
+							"value": "asd",
+							"type": "text"
+						},
+						{
+							"key": "password_confirmation",
+							"value": "asd",
+							"type": "text"
+						},
+						{
+							"key": "no_telp",
+							"value": "6281240842821",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/users/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "admin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/users/update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Iml6eGNAZ21haWwuY29tIiwicGFzc3dvcmQiOiJhc2QiLCJpYXQiOjE2NTU3MjMzMTUsImV4cCI6MTY1NTgwOTcxNX0.nkPBgsiM1ZNkvAJl1Ri1Sm-vZThcSxSU-5zymaSkJWQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "izxc@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "axel",
+							"type": "text"
+						},
+						{
+							"key": "nama_user",
+							"value": "ganteng",
+							"type": "text"
+						},
+						{
+							"key": "no_telp",
+							"value": "08124012342",
+							"type": "text"
+						},
+						{
+							"key": "foto_profile",
+							"type": "file",
+							"src": "/C:/Users/Russel Joshua C/OneDrive/Pictures/t.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/admin/deleteuser",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwicGFzc3dvcmQiOiJhZG1pbiIsImlhdCI6MTY1NTcyNDUzMywiZXhwIjoxNjU1ODEwOTMzfQ.d1NG-i8AJfToBrC3vgr5MvflaM2mvhunk-S8i2GJwS4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "iop@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "loopershamanoob",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/admin/deleteuser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"admin",
+						"deleteuser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3000/api/admin/search_user/izxc@gmail.com/axel",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwicGFzc3dvcmQiOiJhZG1pbiIsImlhdCI6MTY1NTcyNDUzMywiZXhwIjoxNjU1ODEwOTMzfQ.d1NG-i8AJfToBrC3vgr5MvflaM2mvhunk-S8i2GJwS4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/admin/search_user/izxc@gmail.com/axel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"admin",
+						"search_user",
+						"izxc@gmail.com",
+						"axel"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
