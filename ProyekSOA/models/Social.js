@@ -90,7 +90,6 @@ module.exports = {
                 }
             }
         }
-
         return result;
     },
     requestFriendlist: async (email,email_friend,request) =>{
