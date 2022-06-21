@@ -7,6 +7,7 @@ const axios =require('axios');
 
 const keyJWT = "Proyek_SOA";
 
+//Eriko
 router.get("/search", async (req, res) => {
     let {name} = req.query;
     let result = await Game.get(name);
@@ -14,6 +15,7 @@ router.get("/search", async (req, res) => {
     return res.status(200).send(result);
 })
 
+//Eriko
 router.get("/detail", async (req, res) => {
     let {id} = req.query;
     let result = await Game.detail(id);
@@ -26,6 +28,8 @@ router.get("/detail", async (req, res) => {
     return res.status(200).send(result);
 })
 
+
+//Eriko
 router.get("/category", async (req, res) => {
     let {category_name} = req.query;
     try{
@@ -39,12 +43,14 @@ router.get("/category", async (req, res) => {
 })
 
 
+//Eriko
 router.get("/sort", async (req, res) => {
     let {alphabet} = req.query;
     let result = await Game.sort(alphabet);
     return res.status(200).send(result);
 })
 
+//Eriko
 router.get("/library", async (req, res) => {
     let token = req.header("x-auth-token");
     let userObj;
