@@ -37,6 +37,12 @@ module.exports = {
         return result;
     },
     delete: async (email, username) => {
+        await db.query("DELETE FROM library WHERE email_user = ?", [email]);
+        await db.query("DELETE FROM social_friend WHERE email_first = ? OR email_second = ?", [email, email]);
+        await db.query("DELETE FROM social_friend WHERE email_first = ? OR email_second = ?", [email, email]);
+        await db.query("DELETE FROM wishlist WHERE email_user = ? ", [email]);
+        await db.query("UPDATE transaction SET email_user = ? WHERE email_user = ?", ["<<banned>>", email]);
+
         let result = await db.query("DELETE FROM users WHERE email = ? and username = ?", [email,username]);
         return result;
     },

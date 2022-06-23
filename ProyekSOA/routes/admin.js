@@ -9,14 +9,14 @@ const Admin = require("../models/Admin");
 const Library = require("../models/Library");
 
 
-const axios =require('axios');
+const axios = require('axios');
 const { boolean } = require("joi");
 const db = require("../database");
 const Transaction = require("../models/Transaction");
 const keysteam = "8455AC3CD36E18453E97ADCCC24F8A4F";
 const keyJWT = "Proyek_SOA";
 
-router.get("/checkTransactions/:invoice?", async (req,res) =>{
+router.get("/checkTransactions/:invoice?", async (req, res) => {
     let token = req.header("x-auth-token");
     let userObj;
     try {
@@ -29,25 +29,34 @@ router.get("/checkTransactions/:invoice?", async (req,res) =>{
     }
     let invoice = req.params.invoice;
     let result = await Admin.getTransaction(invoice);
-    if(userObj.email != "admin")
-    {
+    if (userObj.email != "admin") {
         return res.status(400).send("Antum bukan admin");
     }
-    if(invoice)
-    {
-        if(!result.length)
-        {
+    if (invoice) {
+        if (!result.length) {
             return res.status(404).send({
-                message : "Transaksi tidak ditemukan"
+                message: "Transaksi tidak ditemukan"
             })
         }
+
+        if (result[0].email_user == "<<banned>>") {
+            let game = await Game.detail(result[0].id_game);
+            let objectInv = {
+                Invoice: result[0].invoice,
+                username: result[0].email_user,
+                nama_game: game.title,
+                status: ((result[0].status == 0) ? "Pending" : "Accepted")
+            }
+            return res.status(200).send(objectInv);
+        }
+
         let user = await User.get(result[0].email_user);
-        let game = await Game.detail(result[0].id_game); 
+        let game = await Game.detail(result[0].id_game);
         let objectInv = {
-            Invoice : result[0].invoice,
-            username : user[0].username,
-            nama_game : game.title,
-            status : ((result[0].status == 0) ? "Pending" : "Accepted")
+            Invoice: result[0].invoice,
+            username: user[0].username,
+            nama_game: game.title,
+            status: ((result[0].status == 0) ? "Pending" : "Accepted")
         }
         return res.status(200).send(objectInv);
     }
@@ -55,20 +64,35 @@ router.get("/checkTransactions/:invoice?", async (req,res) =>{
     let objData = [];
     for (let i = 0; i < result.length; i++) {
         const obj = result[i];
-        let user = await User.get(obj.email_user);
-        let game = await Game.detail(obj.id_game); 
-        let objectInv = {
-            Invoice : obj.invoice,
-            username : user[0].username,
-            nama_game : game.title,
-            status : ((obj.status == 0) ? "Pending" : "Accepted")
+        let game = await Game.detail(obj.id_game);
+
+        if (obj.email_user == "<<banned>>") {
+            let objectInv = {
+                Invoice: obj.invoice,
+                username: obj.email_user,
+                nama_game: game.title,
+                status: ((obj.status == 0) ? "Pending" : "Accepted")
+            }
+
+            objData.push(objectInv);
         }
-        objData.push(objectInv);
+        else {
+            let user = await User.get(obj.email_user);
+            let game = await Game.detail(obj.id_game);
+            let objectInv = {
+                Invoice: obj.invoice,
+                username: user[0].email,
+                nama_game: game.title,
+                status: ((obj.status == 0) ? "Pending" : "Accepted")
+            }
+            objData.push(objectInv);
+        }
+
     }
     return res.status(200).send(objData);
 })
 
-router.post("/verify/:invoice", async (req,res) =>{
+router.post("/verify/:invoice", async (req, res) => {
     let token = req.header("x-auth-token");
     let userObj;
     try {
@@ -79,29 +103,27 @@ router.post("/verify/:invoice", async (req,res) =>{
             Message: "unauthorized"
         });
     }
-    if(userObj.email != "admin")
-    {
+    if (userObj.email != "admin") {
         return res.status(400).send("Antum bukan admin");
     }
     let invoice = req.params.invoice;
     let invInfo = await Admin.getTransaction(invoice);
-    
+
     let verify = await Admin.verifyTransaction(invoice);
-    if(verify == "1")
-    {
+    if (verify == "1") {
         let libObj = {
-            email_user : invInfo[0].email_user,
-            id_game : invInfo[0].id_game
+            email_user: invInfo[0].email_user,
+            id_game: invInfo[0].id_game
         }
         await Library.add(libObj);
 
         return res.status(200).send({
-            message : `${invoice} BERHASIL DIVERIFIKASI`
+            message: `${invoice} BERHASIL DIVERIFIKASI`
         })
     }
-    else{
+    else {
         return res.status(400).send({
-            message : "Invoice sudah pernah diverifikasi"
+            message: "Invoice sudah pernah diverifikasi"
         })
     }
 
@@ -120,8 +142,7 @@ router.delete("/deleteuser", async (req, res) => {
             Message: "unauthorized"
         });
     }
-    if(userObj.email != "admin")
-    {
+    if (userObj.email != "admin") {
         return res.status(400).send("Antum bukan admin");
     }
     let validuser = joi.object({
@@ -148,8 +169,8 @@ router.delete("/deleteuser", async (req, res) => {
     });
 })
 //russel 
-router.get("/search_user/:email/:username", async (req, res) =>{
-    let {email,username} = req.params;
+router.get("/search_user/:email/:username", async (req, res) => {
+    let { email, username } = req.params;
     let token = req.header("x-auth-token");
     let userObj;
     try {
@@ -160,20 +181,19 @@ router.get("/search_user/:email/:username", async (req, res) =>{
             Message: "unauthorized"
         });
     }
-    if(userObj.email != "admin")
-    {
+    if (userObj.email != "admin") {
         return res.status(400).send("Antum bukan admin");
     }
     if (!email && !username) {
         let data = await User.getall();
         return res.status(200).send({ data });
-    }else{
-        let data = await User.get2(email,username);
-        if(!data.length){
+    } else {
+        let data = await User.get2(email, username);
+        if (!data.length) {
             return res.status(404).send("user tidak ditemukkan");
         }
         return res.status(200).send({ data });
     }
-} )
+})
 
 module.exports = router;
